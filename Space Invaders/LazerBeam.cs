@@ -12,6 +12,8 @@ namespace Space_Invaders
         public readonly int x;
         public int y { get; private set; }
 
+        public static int speed { get; private set; } = 6;
+
         public int width { get; private set; } = 6;
         public int height { get; private set; } = 18;
 
@@ -37,7 +39,7 @@ namespace Space_Invaders
 
         public bool Update()
         {
-            y += ((int) direction * 6);
+            y += ((int) direction * LazerBeam.speed);
 
             // if (direction == LazerDirection.down && y > )
 

@@ -11,13 +11,32 @@ namespace Space_Invaders
     {
         public int x { get; private set; }
         public int y { get; private set; }
-        private int width = 40;
-        private int height = 40;
 
+        public static int width { get; private set; } = 40;
+        public static int height { get; private set; } = 40;
+    
         public Alien(int x, int y)
         {
             this.x = x;
             this.y = y;
+        }
+
+        public void Update()
+        {
+            if (AlienGroup.direction == Direction.Right)
+                x += AlienGroup.speed;
+            else
+                x -= AlienGroup.speed;
+        }
+
+        public bool AtRightBoundary()
+        {
+            return x + width > Game.windowWidth - 10;
+        }
+
+        public bool AtLeftBoundary()
+        {
+            return x < 10;
         }
 
         public void Draw(Graphics g)
@@ -25,19 +44,5 @@ namespace Space_Invaders
             g.FillRectangle(Brushes.Purple, x, y, width, height);
         }
 
-        public LazerBeam HitWithLazerBeam(List<LazerBeam> beams)
-        {
-            foreach (LazerBeam beam in beams)
-            {
-                if (beam.x - beam.width > this.x && 
-                    beam.x < this.x + this.width &&
-                    beam.y + beam.height >= this.y &&
-                    beam.y  <= this.y + this.height)
-                    return beam;
-
-            }
-            return null;
-
-        }
     }
 }

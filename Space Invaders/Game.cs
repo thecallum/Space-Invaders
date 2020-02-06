@@ -16,48 +16,31 @@ namespace Space_Invaders
         Player player;
         private int score = 0;
 
-        private int width;
-        private int height;
+        public static int windowWidth { get; private set; }
+        public static int windowHeight { get; private set; }
 
         Form1 form;
 
         private List<LazerBeam> userBeams = new List<LazerBeam>();
 
 
-        private List<Alien> enemies = new List<Alien>();
+        private AlienGroup enemies;
 
 
-        public Game(int width, int height, Form1 form)
+        public Game(int windowWidth, int windowHeight, Form1 form)
         {
-            this.width = width;
-            this.height = height;
+            Game.windowWidth = windowWidth;
+            Game.windowHeight = windowHeight;
 
             this.form = form;
 
             player = new Player();
-
-            AddEnemies();
-        }
-
-        private void AddEnemies()
-        {
-            int gap = 20;
-
-            for (int y = 0; y < 3; y ++)
-                for (int x = 0; x < 10; x++)
-                {
-                    int alienX = (x * (40 + gap)) + gap;
-                    int alienY = (y * (40 + gap)) + gap;
-
-                    enemies.Add(new Alien(alienX, alienY));
-                }
+            enemies = new AlienGroup();
         }
 
         public void MovePlayer(Direction direction)
         {
-            Console.WriteLine("Player Move: " + direction);
-            player.Move(direction);
-           
+            player.Move(direction);          
         }
 
         public void FireShot()
@@ -72,20 +55,14 @@ namespace Space_Invaders
             foreach (LazerBeam beam in userBeams.ToList())
                 beam.Update();
 
-            foreach (Alien enemy in enemies.ToList())
-            {
-                LazerBeam beamThatHitEnemy = enemy.HitWithLazerBeam(userBeams);
-                if (beamThatHitEnemy != null)
-                {
-                    enemies.Remove(enemy);
-                    userBeams.Remove(beamThatHitEnemy);
-                }
-            }
+            enemies.Update();
 
-            if (enemies.Count() == 0)
-            {
+            foreach (LazerBeam beam in userBeams.ToList())
+                if (enemies.FindAlienHitByLazerBeam(beam))
+                    userBeams.Remove(beam);
+
+            if (enemies.count == 0)
                 MyGlobalEvent.FireMyEvent(new EventArgs());
-            }
         }
 
         public void Draw(PaintEventArgs e)
@@ -95,9 +72,7 @@ namespace Space_Invaders
             using (Graphics g = Graphics.FromImage(bitmap))
             {
                 player.Draw(g);
-
-                foreach (Alien enemy in enemies)
-                    enemy.Draw(g);
+                enemies.Draw(g);
 
                 foreach (LazerBeam beam in userBeams)
                     beam.Draw(g);

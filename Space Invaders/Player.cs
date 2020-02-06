@@ -17,21 +17,20 @@ namespace Space_Invaders
         private int width = 100;
         private int height = 100;
 
+        private readonly int speed = 10;
+
         public int x { get; private set; }
         public int y { get; private set; }
 
-        private readonly int MIN_X = 10;
-        private readonly int MAX_X = 680;
-
         public Player()
         {
-            x = (800 / 2) - (width / 2);
-            y = 600 - height - 50;
+            x = (Game.windowWidth + width) /2;
+            y = Game.windowHeight - height - 10;
         }
 
         public void Draw(Graphics g)
         {
-            Console.WriteLine("Draw: " + x + ", " + y);
+           //  Console.WriteLine("Draw: " + x + ", " + y);
             //pictureBox.Location = new Point(x, y);
 
                 g.FillRectangle(Brushes.Red, x, y, width, height);
@@ -51,14 +50,16 @@ namespace Space_Invaders
 
         public void Move(Direction direction)
         {
-            Console.WriteLine("Move");
             if (direction == Direction.Right)
-                x += 10;
+                x += speed;
             else
-                x -= 10;
+                x -= speed;
 
-            if (x > MAX_X) x = MAX_X;
-            if (x < MIN_X) x = MIN_X;
+            if (x > Game.windowWidth - width -10)
+                x = Game.windowWidth - width -10;
+
+            if (x < 10)
+                x = 10;
         }
 
     }

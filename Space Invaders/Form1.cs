@@ -19,11 +19,8 @@ namespace Space_Invaders
         public Form1()
         {
             InitializeComponent();
-
-            this.Width = 800;
-            this.Height = 600;
             
-            game = new Game(this.Width, this.Height, this);
+            game = new Game(this.ClientSize.Width, this.ClientSize.Height, this);
 
             gameTimer = new Timer();
             gameTimer.Interval = 5;
@@ -66,7 +63,7 @@ namespace Space_Invaders
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Console.WriteLine("Painted");
+            // Console.WriteLine("Painted");
             game.Draw(e);
 
             //e.Graphics.FillRectangle(Brushes.Red, 100, 100, 100, 100);
