@@ -10,22 +10,15 @@ using System.Windows.Forms;
 
 namespace Space_Invaders
 {
-
     class Game
     {
         Player player;
         private int score = 0;
-
         public static int windowWidth { get; private set; }
         public static int windowHeight { get; private set; }
-
         Form1 form;
-
         private List<LazerBeam> userBeams = new List<LazerBeam>();
-
-
         private AlienGroup enemies;
-
 
         public Game(int windowWidth, int windowHeight, Form1 form)
         {
@@ -46,7 +39,7 @@ namespace Space_Invaders
         public void FireShot()
         {
             userBeams.Add(
-                new LazerBeam(player.x, player.y, LazerBeam.LazerDirection.up)
+                new LazerBeam(player.x, player.y, player.width, player.height, LazerBeam.LazerDirection.up)
             );
         }
 
@@ -71,14 +64,20 @@ namespace Space_Invaders
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                player.Draw(g);
                 enemies.Draw(g);
 
                 foreach (LazerBeam beam in userBeams)
                     beam.Draw(g);
+
+                player.Draw(g);
             }
 
             e.Graphics.DrawImageUnscaled(bitmap, 0, 0);
+        }
+
+        public void ToggleAnimation()
+        {
+            enemies.ToggleAnimation();
         }
     }
 }

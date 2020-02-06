@@ -14,8 +14,8 @@ namespace Space_Invaders
 
         public static int speed { get; private set; } = 6;
 
-        public int width { get; private set; } = 6;
-        public int height { get; private set; } = 18;
+        public int width { get; private set; } = 2;
+        public int height { get; private set; } = 20;
 
         public enum LazerDirection
         {
@@ -25,16 +25,16 @@ namespace Space_Invaders
 
         public readonly LazerDirection direction;
 
-        public LazerBeam(int x, int y, LazerDirection direction)
+        public LazerBeam(int playerX, int playerY, int playerWidth, int playerHeight, LazerDirection direction)
         {
-            this.x = x + 50 - 3;
-            this.y = y;
+            x = playerWidth /2 + playerX -1;
+            y = playerY; 
             this.direction = direction;
         }
 
         public void Draw(Graphics g)
         {
-            g.FillRectangle(Brushes.Blue, x, y, width, height);
+            g.FillRectangle(Brushes.Red, x, y, width, height);
         }
 
         public bool Update()

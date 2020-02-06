@@ -14,11 +14,16 @@ namespace Space_Invaders
 
         public static int width { get; private set; } = 40;
         public static int height { get; private set; } = 40;
+
+        private int imageState = 0;
+
+        private Image image;
     
         public Alien(int x, int y)
         {
             this.x = x;
             this.y = y;
+            ToggleImage();
         }
 
         public void Update()
@@ -41,7 +46,35 @@ namespace Space_Invaders
 
         public void Draw(Graphics g)
         {
-            g.FillRectangle(Brushes.Purple, x, y, width, height);
+            g.DrawImage(image, x, y, width, height);
+        }
+
+        public void ToggleImage()
+        {
+            imageState++;
+
+            switch(imageState)
+            {
+                case 1:
+                    image = Properties.Resources.bug1;
+                    break;
+                case 2:
+                    image = Properties.Resources.bug2;
+                    break;
+                case 3:
+                    image = Properties.Resources.bug3;
+                    break;
+                case 4:
+                    image = Properties.Resources.bug4;
+                    break;
+                case 5:
+                    image = Properties.Resources.bug3;
+                    break;
+                default:
+                    image = Properties.Resources.bug2;
+                    imageState = 0;
+                    break;
+            }
         }
 
     }

@@ -12,12 +12,12 @@ namespace Space_Invaders
 {
     class Player
     {
-        // private Bitmap image = new Bitmap(Properties.Resources.player);
+        private Image image;
 
-        private int width = 100;
-        private int height = 100;
+        public int width { get; private set; } = 80;
+        public int height { get; private set; } = 80;
 
-        private readonly int speed = 10;
+        private readonly int speed = 8;
 
         public int x { get; private set; }
         public int y { get; private set; }
@@ -26,26 +26,19 @@ namespace Space_Invaders
         {
             x = (Game.windowWidth + width) /2;
             y = Game.windowHeight - height - 10;
+
+            image = ResizeImage(Properties.Resources.player, new Size(80, 80));
+        
+        }
+
+        public static Image ResizeImage(Image imgToResize, Size size)
+        {
+            return (Image)(new Bitmap(imgToResize, size));
         }
 
         public void Draw(Graphics g)
         {
-           //  Console.WriteLine("Draw: " + x + ", " + y);
-            //pictureBox.Location = new Point(x, y);
-
-                g.FillRectangle(Brushes.Red, x, y, width, height);
-
-            /*
-            Bitmap bm = new Bitmap(100, 100);
-
-            using (Graphics g = Graphics.FromImage(bm))
-            {
-                // do normal rendering
-            }
-
-            e.Graphics.DrawImage(bm);
-
-    */
+            g.DrawImage(image, x, y, width, height);
         }
 
         public void Move(Direction direction)
@@ -61,6 +54,5 @@ namespace Space_Invaders
             if (x < 10)
                 x = 10;
         }
-
     }
 }

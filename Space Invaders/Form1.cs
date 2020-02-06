@@ -14,6 +14,7 @@ namespace Space_Invaders
     {
         private Game game;
         private Timer gameTimer;
+        private Timer animationTimer;
         private List<Keys> keysPressed = new List<Keys>();
 
         public Form1()
@@ -23,20 +24,30 @@ namespace Space_Invaders
             game = new Game(this.ClientSize.Width, this.ClientSize.Height, this);
 
             gameTimer = new Timer();
-            gameTimer.Interval = 5;
+            gameTimer.Interval = 10;
             gameTimer.Tick += new EventHandler(gameTimer_tick);
+
+            animationTimer = new Timer();
+            animationTimer.Interval = 100;
+            animationTimer.Tick += new EventHandler(animationTimer_tick);
 
             MyGlobalEvent.MyEvent += GameEnd;
 
             gameTimer.Start();
-
+            animationTimer.Start();
         }
 
         private void GameEnd(Object sender, EventArgs e)
         {
             gameTimer.Stop();
+            animationTimer.Stop();
             this.Refresh();
             MessageBox.Show("Game Ended");
+        }
+
+        private void animationTimer_tick(object sender, EventArgs e)
+        {
+            game.ToggleAnimation();
         }
 
         private void gameTimer_tick(object sender, EventArgs e)

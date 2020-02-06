@@ -10,17 +10,14 @@ namespace Space_Invaders
     class AlienGroup
     {
         private readonly int columnCount = 10;
-
         public static int gap { get; private set; } = 20;
-
         public static Direction direction { get; private set; } = Direction.Right;
         public static int speed { get; private set; } = 1;
-        
+        public int count { get { return row_1.Count + row_2.Count + row_3.Count; } }
+
         private List<Alien> row_1;
         private List<Alien> row_2;
         private List<Alien> row_3;
-
-        public int count { get { return row_1.Count + row_2.Count + row_3.Count; } }
 
         public AlienGroup()
         {
@@ -123,6 +120,19 @@ namespace Space_Invaders
         {
             foreach (Alien alien in row)
                 alien.Draw(g);
+        }
+
+        public void ToggleAnimation()
+        {
+            ToggleAnimationRow(row_1);
+            ToggleAnimationRow(row_2);
+            ToggleAnimationRow(row_3);
+        }
+
+        private void ToggleAnimationRow(List<Alien> row)
+        {
+            foreach (Alien alien in row)
+                alien.ToggleImage();
         }
     }
 }
