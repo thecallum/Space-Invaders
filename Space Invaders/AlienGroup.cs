@@ -34,8 +34,8 @@ namespace Space_Invaders
         {
             for (int i = 0; i < columnCount; i++)
             {
-                int alienX = (i * (Alien.width + AlienGroup.gap)) + AlienGroup.gap;
-                int alienY = (rowNum * (Alien.height + AlienGroup.gap)) + AlienGroup.gap;
+                int alienX = (i * (Alien.width + gap)) + gap;
+                int alienY = (rowNum * (Alien.height + gap)) + gap;
                 row.Add(new Alien(alienX, alienY));
             }
         }
@@ -45,21 +45,24 @@ namespace Space_Invaders
             // Check if alien furthest to right
 
             if (GroupAtBoundary())
-            {
-                if (AlienGroup.direction == Direction.Right)
-                    AlienGroup.direction = Direction.Left;
-                else
-                    AlienGroup.direction = Direction.Right;
-            }
+                ToggleDirection();
 
             UpdateRow(row_1);
             UpdateRow(row_2);
             UpdateRow(row_3);
         }
 
+        private void ToggleDirection()
+        {
+            if (direction == Direction.Right)
+                direction = Direction.Left;
+            else
+                direction = Direction.Right;
+        }
+
         private bool GroupAtBoundary()
         {
-            if (AlienGroup.direction == Direction.Right) {
+            if (direction == Direction.Right) {
                 // check all furthest right aliens
                 if (row_1.Count > 0 && row_1[row_1.Count - 1].AtRightBoundary()) return true;
                 if (row_2.Count > 0 && row_2[row_2.Count - 1].AtRightBoundary()) return true;
@@ -95,11 +98,14 @@ namespace Space_Invaders
                 if (alien.HitByLazerBeam(beam))
                 {
                     if (alien.health == 0)
+                    {
+                        UpdateScoreEvent.FireMyEvent(alien.value);
                         row.Remove(alien);
+                    }
                     return true;
                 }
             }
-                return false;
+            return false;
         }
 
         public void Draw(Graphics g)

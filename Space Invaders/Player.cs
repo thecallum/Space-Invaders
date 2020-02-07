@@ -34,7 +34,7 @@ namespace Space_Invaders
 
         public static Image ResizeImage(Image imgToResize, Size size)
         {
-            return (Image)(new Bitmap(imgToResize, size));
+            return new Bitmap(imgToResize, size);
         }
 
         public void Draw(Graphics g)

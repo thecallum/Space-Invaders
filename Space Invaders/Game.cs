@@ -12,6 +12,8 @@ namespace Space_Invaders
 {
     class Game
     {
+        Form1 form;
+     
         Player player;
         private int score = 0;
         private List<LazerBeam> userBeams = new List<LazerBeam>();
@@ -22,18 +24,29 @@ namespace Space_Invaders
 
         private int updatesBeforeNextShot = 0;
         
-        public Game(int windowWidth, int windowHeight)
+        public Game(int windowWidth, int windowHeight, Form1 form)
         {
             Game.windowWidth = windowWidth;
             Game.windowHeight = windowHeight;
 
+            this.form = form;
+
+            UpdateScoreEvent.MyEvent += UpdateScoreMethod;
+
             player = new Player();
             enemies = new AlienGroup();
+
         }
 
         public void MovePlayer(Direction direction)
         {
             player.Move(direction);          
+        }
+
+        private void UpdateScoreMethod(UpdateScoreEventArgs e)
+        {
+            score += e.value;
+            form.UpdateScore(score);
         }
 
         public void FireShot()
@@ -61,7 +74,7 @@ namespace Space_Invaders
                     userBeams.Remove(beam);
 
             if (enemies.count == 0)
-                MyGlobalEvent.FireMyEvent(new EventArgs());
+                GameEndedEvent.FireMyEvent();
         }
 
         public void Draw(PaintEventArgs e)

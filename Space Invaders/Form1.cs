@@ -21,7 +21,7 @@ namespace Space_Invaders
         {
             InitializeComponent();
             
-            game = new Game(this.ClientSize.Width, this.ClientSize.Height);
+            game = new Game(ClientSize.Width, ClientSize.Height, this);
 
             gameTimer = new Timer();
             gameTimer.Interval = 10;
@@ -31,7 +31,7 @@ namespace Space_Invaders
             animationTimer.Interval = 100;
             animationTimer.Tick += new EventHandler(animationTimer_tick);
 
-            MyGlobalEvent.MyEvent += GameEnd;
+            GameEndedEvent.MyEvent += GameEnd;
 
             gameTimer.Start();
             animationTimer.Start();
@@ -48,6 +48,11 @@ namespace Space_Invaders
         private void animationTimer_tick(object sender, EventArgs e)
         {
             game.ToggleAnimation();
+        }
+
+        public void UpdateScore(int value)
+        {
+            this.score_label.Text = "Score: " + value;
         }
 
         private void gameTimer_tick(object sender, EventArgs e)
@@ -84,14 +89,11 @@ namespace Space_Invaders
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Space)
             {
-                // game.FireShot();
                 spacePressed = true;
                 return;
             }
-
 
             if (keysPressed.Contains(e.KeyCode))
                 keysPressed.Remove(e.KeyCode);
@@ -103,7 +105,6 @@ namespace Space_Invaders
         {
             if (e.KeyCode == Keys.Space)
             {
-                // game.FireShot();
                 spacePressed = false;
                 return;
             }

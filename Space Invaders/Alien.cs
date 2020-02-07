@@ -11,14 +11,11 @@ namespace Space_Invaders
     {
         public int x { get; private set; }
         public int y { get; private set; }
-
         public static int width { get; private set; } = 40;
         public static int height { get; private set; } = 40;
-
+        public readonly int value;
         public int health { get; private set; }
-
         private int imageState = 0;
-
         private Image image;
     
         public Alien(int x, int y)
@@ -26,6 +23,7 @@ namespace Space_Invaders
             this.x = x;
             this.y = y;
             health = 1;
+            value = 10;
             ToggleImage();
         }
 

@@ -57,10 +57,11 @@
     </Compile>
     <Compile Include="Game.cs" />
     <Compile Include="LazerBeam.cs" />
-    <Compile Include="MyGlobalEvent.cs" />
+    <Compile Include="GameEndedEvent.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UpdateScoreEvent.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

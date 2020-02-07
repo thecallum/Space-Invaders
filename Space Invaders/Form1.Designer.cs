@@ -28,7 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.score_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // score_label
+            // 
+            this.score_label.AutoSize = true;
+            this.score_label.ForeColor = System.Drawing.Color.White;
+            this.score_label.Location = new System.Drawing.Point(12, 9);
+            this.score_label.Name = "score_label";
+            this.score_label.Size = new System.Drawing.Size(47, 13);
+            this.score_label.TabIndex = 0;
+            this.score_label.Text = "Score: 0";
             // 
             // Form1
             // 
@@ -36,6 +47,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.score_label);
             this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -43,10 +55,13 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Label score_label;
     }
 }
 

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Space_Invaders
 {
-    public static class MyGlobalEvent
+    public static class GameEndedEvent
     {
         public static event EventHandler MyEvent;
 
-        public static void FireMyEvent(EventArgs args)
+        public static void FireMyEvent()
         {
-            MyEvent.Invoke(null, args);
+            MyEvent.Invoke(null, EventArgs.Empty);
         }
     }
 }
