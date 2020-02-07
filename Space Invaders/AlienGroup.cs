@@ -81,32 +81,25 @@ namespace Space_Invaders
 
         public bool FindAlienHitByLazerBeam(LazerBeam beam)
         {
-            if (FindAlienHitByLazerBeamInRow(row_3, beam) != null)
-                return true;
-
-            if (FindAlienHitByLazerBeamInRow(row_2, beam) != null)
-                return true;
-
-            if (FindAlienHitByLazerBeamInRow(row_1, beam) != null)
-                return true;
+            if (FindAlienHitByLazerBeamInRow(row_3, beam)) return true;
+            if (FindAlienHitByLazerBeamInRow(row_2, beam)) return true;
+            if (FindAlienHitByLazerBeamInRow(row_1, beam)) return true;
 
             return false;
         }
 
-        private LazerBeam FindAlienHitByLazerBeamInRow(List<Alien> row, LazerBeam beam)
+        private bool FindAlienHitByLazerBeamInRow(List<Alien> row, LazerBeam beam)
         {
             foreach (Alien alien in row.ToArray())
             {
-                if (beam.x - beam.width > alien.x &&
-                    beam.x < alien.x + Alien.width &&
-                    beam.y + beam.height >= alien.y &&
-                    beam.y <= alien.y + Alien.height)
+                if (alien.HitByLazerBeam(beam))
                 {
-                    row.Remove(alien);
-                    return beam;
+                    if (alien.health == 0)
+                        row.Remove(alien);
+                    return true;
                 }
             }
-                return null;
+                return false;
         }
 
         public void Draw(Graphics g)

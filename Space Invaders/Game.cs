@@ -14,18 +14,18 @@ namespace Space_Invaders
     {
         Player player;
         private int score = 0;
-        public static int windowWidth { get; private set; }
-        public static int windowHeight { get; private set; }
-        Form1 form;
         private List<LazerBeam> userBeams = new List<LazerBeam>();
         private AlienGroup enemies;
 
-        public Game(int windowWidth, int windowHeight, Form1 form)
+        public static int windowWidth { get; private set; }
+        public static int windowHeight { get; private set; }
+
+        private int updatesBeforeNextShot = 0;
+        
+        public Game(int windowWidth, int windowHeight)
         {
             Game.windowWidth = windowWidth;
             Game.windowHeight = windowHeight;
-
-            this.form = form;
 
             player = new Player();
             enemies = new AlienGroup();
@@ -38,13 +38,19 @@ namespace Space_Invaders
 
         public void FireShot()
         {
-            userBeams.Add(
-                new LazerBeam(player.x, player.y, player.width, player.height, LazerBeam.LazerDirection.up)
-            );
+            if (updatesBeforeNextShot == 0) {
+                updatesBeforeNextShot = 10;
+
+                userBeams.Add(
+                    new LazerBeam(player.x, player.y, player.width, player.height, LazerBeam.LazerDirection.up)
+                );
+            }
         }
 
         public void Update()
         {
+            if (updatesBeforeNextShot > 0) updatesBeforeNextShot--;
+
             foreach (LazerBeam beam in userBeams.ToList())
                 beam.Update();
 

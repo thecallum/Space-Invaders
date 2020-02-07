@@ -21,7 +21,7 @@ namespace Space_Invaders
         {
             InitializeComponent();
             
-            game = new Game(this.ClientSize.Width, this.ClientSize.Height, this);
+            game = new Game(this.ClientSize.Width, this.ClientSize.Height);
 
             gameTimer = new Timer();
             gameTimer.Interval = 10;
@@ -67,6 +67,9 @@ namespace Space_Invaders
                 }
             }
 
+            if (spacePressed)
+                game.FireShot();
+
             game.Update();
 
             this.Refresh();
@@ -74,19 +77,18 @@ namespace Space_Invaders
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            // Console.WriteLine("Painted");
             game.Draw(e);
-
-            //e.Graphics.FillRectangle(Brushes.Red, 100, 100, 100, 100);
-
         }
+
+        private bool spacePressed = false;
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
 
             if (e.KeyCode == Keys.Space)
             {
-                game.FireShot();
+                // game.FireShot();
+                spacePressed = true;
                 return;
             }
 
@@ -99,6 +101,13 @@ namespace Space_Invaders
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Space)
+            {
+                // game.FireShot();
+                spacePressed = false;
+                return;
+            }
+
             if (keysPressed.Contains(e.KeyCode))
                 keysPressed.Remove(e.KeyCode);
         }

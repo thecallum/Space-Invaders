@@ -15,6 +15,8 @@ namespace Space_Invaders
         public static int width { get; private set; } = 40;
         public static int height { get; private set; } = 40;
 
+        public int health { get; private set; }
+
         private int imageState = 0;
 
         private Image image;
@@ -23,6 +25,7 @@ namespace Space_Invaders
         {
             this.x = x;
             this.y = y;
+            health = 1;
             ToggleImage();
         }
 
@@ -32,6 +35,20 @@ namespace Space_Invaders
                 x += AlienGroup.speed;
             else
                 x -= AlienGroup.speed;
+        }
+
+        public bool HitByLazerBeam(LazerBeam beam)
+        {
+            if (beam.x - beam.width > this.x &&
+                    beam.x < this.x + Alien.width &&
+                    beam.y + beam.height >= this.y &&
+                    beam.y <= this.y + Alien.height)
+            {
+                this.health--;
+                return true;
+            }
+
+            return false;
         }
 
         public bool AtRightBoundary()

@@ -16,13 +16,14 @@ namespace Space_Invaders
 
         public int width { get; private set; } = 80;
         public int height { get; private set; } = 80;
+        public int health { get; private set; } = 3;
 
         private readonly int speed = 8;
 
         public int x { get; private set; }
         public int y { get; private set; }
 
-        public Player()
+                public Player()
         {
             x = (Game.windowWidth + width) /2;
             y = Game.windowHeight - height - 10;
