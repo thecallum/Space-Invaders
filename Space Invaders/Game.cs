@@ -34,8 +34,18 @@ namespace Space_Invaders
             this.form = form;
 
             UpdateScoreEvent.MyEvent += UpdateScoreMethod;
+
+            int playerWidth = 80;
+            int playerHeight = 80;
+
+            Rectangle playerPosition = new Rectangle(
+                (Game.windowWidth + playerWidth) / 2, 
+                Game.windowHeight - playerHeight - 10,
+                playerWidth,
+                playerHeight
+            );
         
-            player = new Player();
+            player = new Player(playerPosition);
             enemies = new AlienGroup();
 
         }
@@ -53,15 +63,12 @@ namespace Space_Invaders
 
         public void FireShot()
         {
-            if (updatesBeforeNextShot == 0) {
-                updatesBeforeNextShot = 10;
+            if (updatesBeforeNextShot > 0) return;
 
-                Rectangle userPosition = new Rectangle(player.x, player.y, player.width, player.height);
-
-                userShots.Add(new UserLazerBeam(userPosition));
-            }
+            updatesBeforeNextShot = 10;
+            userShots.Add(new UserLazerBeam(player.position));
         }
-
+    
         public void Update()
         {
             if (updatesBeforeNextShot > 0) updatesBeforeNextShot--;
@@ -79,6 +86,7 @@ namespace Space_Invaders
                 if (player.HitByLazerBeam(beam))
                 {
                     enemyShots.Remove(beam);
+                    Console.WriteLine("Player Hit: " + player.health);
                     UpdateHealthEvent.FireMyEvent(player.health);
                     if (player.health == 0) GameEndedEvent.FireMyEvent();
                 }

@@ -12,7 +12,6 @@ namespace Space_Invaders
         private readonly int columnCount = 10;
         public static int gap { get; private set; } = 20;
         public static Direction direction { get; private set; } = Direction.Right;
-        public static int speed { get; private set; } = 1;
         public int count { get {
                 return row_1.Count(s => s != null) + row_2.Count(s => s != null) + row_3.Count(s => s != null);
         }}
@@ -43,10 +42,14 @@ namespace Space_Invaders
         {
             for (int i = 0; i < columnCount; i++)
             {
-                int alienX = (i * (Alien.width + gap)) + gap;
-                int alienY = (rowNum * (Alien.height + gap)) + gap;
+                Rectangle position = new Rectangle(
+                    (i * (30 + gap)) + gap,
+                    (rowNum * (30 + gap)) + gap,
+                    30,
+                    30
+                );
 
-                row[i] = new Alien(i, alienX, alienY);
+                row[i] = new Alien(position, i);
             }
         }
 
@@ -130,7 +133,7 @@ namespace Space_Invaders
                 {
                     if (row[i].health == 0)
                     {
-                        UpdateScoreEvent.FireMyEvent(row[i].value);
+                        UpdateScoreEvent.FireMyEvent(row[i].points);
                         row[i] = null;
                     }
                     return true;
@@ -190,8 +193,7 @@ namespace Space_Invaders
 
             Alien selectedEnemy = firstRow[random.Next(firstRow.Count)];
 
-            Rectangle enemyPosition = new Rectangle(selectedEnemy.x, selectedEnemy.y, Alien.width, Alien.height);
-            enemyShots.Add(new EnemyLazerBeam(enemyPosition));
+            enemyShots.Add(new EnemyLazerBeam(selectedEnemy.position));
         }
     }
 }

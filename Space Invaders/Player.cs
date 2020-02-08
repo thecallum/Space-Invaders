@@ -10,64 +10,30 @@ using System.Windows.Forms;
 
 namespace Space_Invaders
 {
-    class Player
+    class Player : Movable
     {
-        private Image image;
-
-        public int width { get; private set; } = 80;
-        public int height { get; private set; } = 80;
-        public int health { get; private set; } = 3;
-
-        private readonly int speed = 8;
-
-        public int x { get; private set; }
-        public int y { get; private set; }
-
-                public Player()
+        public Player(Rectangle position)
+            : base(position, 8, 3)
         {
-            x = (Game.windowWidth + width) /2;
-            y = Game.windowHeight - height - 10;
-
-            image = ResizeImage(Properties.Resources.player, new Size(80, 80));
-        
+            image = Properties.Resources.player;
         }
 
-        public static Image ResizeImage(Image imgToResize, Size size)
+        public override void Move(Direction direction)
         {
-            return new Bitmap(imgToResize, size);
-        }
+            Rectangle newPosition = this.position;
 
-        public bool HitByLazerBeam(LazerBeam beam)
-        {
-            if (beam.x - beam.width > this.x &&
-                   beam.x < this.x + this.width &&
-                   beam.y + beam.height >= this.y &&
-                   beam.y <= this.y + this.height)
-            {
-                this.health--;
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Draw(Graphics g)
-        {
-            g.DrawImage(image, x, y, width, height);
-        }
-
-        public void Move(Direction direction)
-        {
             if (direction == Direction.Right)
-                x += speed;
+                newPosition.X += speed;
             else
-                x -= speed;
+                newPosition.X -= speed;
 
-            if (x > Game.windowWidth - width -10)
-                x = Game.windowWidth - width -10;
+            if (AtRightBoundary())
+                newPosition.X = Game.windowWidth - newPosition.Width -10;
 
-            if (x < 10)
-                x = 10;
+            if (AtLeftBoundary())
+                newPosition.X = 10;
+
+            this.position = newPosition;
         }
     }
 }

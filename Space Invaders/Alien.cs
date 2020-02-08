@@ -7,63 +7,25 @@ using System.Drawing;
 
 namespace Space_Invaders
 {
-    class Alien
+    class Alien : Movable
     {
-        public int x { get; private set; }
-        public int y { get; private set; }
         public readonly int column;
-        public static int width { get; private set; } = 40;
-        public static int height { get; private set; } = 40;
-        public readonly int value;
-        public int health { get; private set; }
+        public readonly int points;
+
         private int imageState = 0;
-        private Image image;
-    
-        public Alien(int column, int x, int y)
+
+        public Alien(Rectangle position, int column)
+            : base(position, 1, 1)
         {
             this.column = column;
-            this.x = x;
-            this.y = y;
-            health = 1;
-            value = 10;
+
+            points = 10;
             ToggleImage();
         }
 
         public void Update()
         {
-            if (AlienGroup.direction == Direction.Right)
-                x += AlienGroup.speed;
-            else
-                x -= AlienGroup.speed;
-        }
-
-        public bool HitByLazerBeam(LazerBeam beam)
-        {
-            if (beam.x - beam.width > this.x &&
-                    beam.x < this.x + Alien.width &&
-                    beam.y + beam.height >= this.y &&
-                    beam.y <= this.y + Alien.height)
-            {
-                this.health--;
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool AtRightBoundary()
-        {
-            return x + width > Game.windowWidth - 10;
-        }
-
-        public bool AtLeftBoundary()
-        {
-            return x < 10;
-        }
-
-        public void Draw(Graphics g)
-        {
-            g.DrawImage(image, x, y, width, height);
+            Move(AlienGroup.direction);
         }
 
         public void ToggleImage()
