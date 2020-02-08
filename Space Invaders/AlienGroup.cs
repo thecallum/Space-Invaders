@@ -56,11 +56,60 @@ namespace Space_Invaders
         public void Update()
         {
             // Check if alien furthest to right
-            if (GroupAtBoundary()) ToggleDirection();
+            bool directionChanged = GroupAtBoundary();
 
-            UpdateRow(row_1);
-            UpdateRow(row_2);
-            UpdateRow(row_3);
+            if (directionChanged) ToggleDirection();
+
+            UpdateRow(row_1, directionChanged);
+            UpdateRow(row_2, directionChanged);
+            UpdateRow(row_3, directionChanged);
+
+            if (AliensAtBottom())
+                GameEndedEvent.FireMyEvent();
+        }
+
+        private void UpdateRow(Alien[] row, bool directionChanged)
+        {
+            for (int i = 0; i < row.Count(); i++)
+                if (row[i] != null)
+                    row[i].Update(directionChanged);
+        }
+
+        private bool AliensAtBottom()
+        {
+            if (row_3.Count(s => s != null) > 0)
+            {
+                if (RowAtBottom(row_3))
+                    return true;
+                return false;
+            }
+
+            if (row_2.Count(s => s != null) > 0)
+            {
+                if (RowAtBottom(row_2))
+                    return true;
+                return false;
+            }
+
+            if (row_1.Count(s => s != null) > 0)
+            {
+                if (RowAtBottom(row_1))
+                    return true;
+                return false;
+            }
+
+            return false;
+        }
+
+
+        private bool RowAtBottom(Alien[] row)
+        {
+            for (int i = 0; i < row.Count(); i++)
+            {
+                if (row[i] == null) continue;
+                if (row[i].AtBottomBoundary()) return true;
+            }
+            return false;
         }
 
         private void ToggleDirection()
@@ -107,13 +156,6 @@ namespace Space_Invaders
             }
 
             return false;
-        }
-
-        private void UpdateRow(Alien[] row)
-        {
-            for (int i = 0; i < row.Count(); i++)
-                if (row[i] != null)
-                    row[i].Update();
         }
 
         public bool FindAlienHitByLazerBeam(LazerBeam beam)

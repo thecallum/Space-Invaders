@@ -23,9 +23,24 @@ namespace Space_Invaders
             ToggleImage();
         }
 
-        public void Update()
+        public void Update(bool directionChanged)
         {
+            if (directionChanged)
+                MoveDown();
+
             Move(AlienGroup.direction);
+        }
+
+        private void MoveDown()
+        {
+            Rectangle newPosition = position;
+            newPosition.Y += 20;
+            position = newPosition;
+        }
+
+        public bool AtBottomBoundary()
+        {
+            return position.Y + position.Height > Game.windowHeight;
         }
 
         public void ToggleImage()

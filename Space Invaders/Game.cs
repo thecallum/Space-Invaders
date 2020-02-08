@@ -86,7 +86,6 @@ namespace Space_Invaders
                 if (player.HitByLazerBeam(beam))
                 {
                     enemyShots.Remove(beam);
-                    Console.WriteLine("Player Hit: " + player.health);
                     UpdateHealthEvent.FireMyEvent(player.health);
                     if (player.health == 0) GameEndedEvent.FireMyEvent();
                 }
