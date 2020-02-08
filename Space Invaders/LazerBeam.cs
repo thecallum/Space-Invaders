@@ -7,46 +7,65 @@ using System.Drawing;
 
 namespace Space_Invaders
 {
-    public class LazerBeam
+    public class UserLazerBeam : LazerBeam
+    {
+        public UserLazerBeam(Rectangle userPosition)
+            : base(userPosition, Direction.up, Brushes.Red)
+        {
+
+        }
+    }
+
+    public class EnemyLazerBeam : LazerBeam
+    {
+        public EnemyLazerBeam(Rectangle userPosition)
+            :  base(userPosition, Direction.down, Brushes.Yellow)
+        {
+
+        }
+    }
+    
+    public abstract class LazerBeam
     {
         public readonly int x;
         public int y { get; private set; }
 
-        public static int speed { get; private set; } = 6;
+        public static int speed { get; private set; } = 12;
 
-        public int width { get; private set; } = 2;
-        public int height { get; private set; } = 20;
+        public readonly int width = 2;
+        public readonly int height = 20;
+        public readonly Direction direction;
+        public readonly Brush color;
 
-        public enum LazerDirection
+        public enum Direction
         {
             up = -1,
             down = 1,
         }
 
-        public readonly LazerDirection direction;
-
-        public LazerBeam(int playerX, int playerY, int playerWidth, int playerHeight, LazerDirection direction)
+        public LazerBeam(Rectangle userPosition, Direction direction, Brush color)
         {
-            x = playerWidth /2 + playerX -1;
-            y = playerY; 
+            x = userPosition.Width / 2 + userPosition.X - 1;
+            y = userPosition.Y;
+
             this.direction = direction;
+            this.color = color;
         }
 
         public void Draw(Graphics g)
         {
-            g.FillRectangle(Brushes.Red, x, y, width, height);
+            g.FillRectangle(color, x, y, width, height);
         }
 
-        public bool Update()
+        public void Update(List<LazerBeam> beams)
         {
-            y += ((int) direction * LazerBeam.speed);
+            y += (int) direction * speed;
+            
+            if (direction == Direction.up && y < -height)
+                beams.Remove(this);
 
-            // if (direction == LazerDirection.down && y > )
-
-            if (direction == LazerDirection.up && y < -10)
-                return false;
-
-            return true;
+            if (direction == Direction.down && y > Game.windowHeight - height)
+                beams.Remove(this);
         }
     }
 }

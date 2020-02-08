@@ -11,6 +11,7 @@ namespace Space_Invaders
     {
         public int x { get; private set; }
         public int y { get; private set; }
+        public readonly int column;
         public static int width { get; private set; } = 40;
         public static int height { get; private set; } = 40;
         public readonly int value;
@@ -18,8 +19,9 @@ namespace Space_Invaders
         private int imageState = 0;
         private Image image;
     
-        public Alien(int x, int y)
+        public Alien(int column, int x, int y)
         {
+            this.column = column;
             this.x = x;
             this.y = y;
             health = 1;

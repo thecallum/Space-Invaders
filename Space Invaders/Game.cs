@@ -13,10 +13,12 @@ namespace Space_Invaders
     class Game
     {
         Form1 form;
-     
         Player player;
+
         private int score = 0;
-        private List<LazerBeam> userBeams = new List<LazerBeam>();
+        private List<LazerBeam> userShots = new List<LazerBeam>();
+        private List<LazerBeam> enemyShots = new List<LazerBeam>();
+
         private AlienGroup enemies;
 
         public static int windowWidth { get; private set; }
@@ -54,9 +56,9 @@ namespace Space_Invaders
             if (updatesBeforeNextShot == 0) {
                 updatesBeforeNextShot = 10;
 
-                userBeams.Add(
-                    new LazerBeam(player.x, player.y, player.width, player.height, LazerBeam.LazerDirection.up)
-                );
+                Rectangle userPosition = new Rectangle(player.x, player.y, player.width, player.height);
+
+                userShots.Add(new UserLazerBeam(userPosition));
             }
         }
 
@@ -64,17 +66,22 @@ namespace Space_Invaders
         {
             if (updatesBeforeNextShot > 0) updatesBeforeNextShot--;
 
-            foreach (LazerBeam beam in userBeams.ToList())
-                beam.Update();
+            foreach (LazerBeam beam in userShots.ToArray())
+                beam.Update(userShots);
 
             enemies.Update();
 
-            foreach (LazerBeam beam in userBeams.ToList())
+            foreach (LazerBeam beam in userShots.ToList())
                 if (enemies.FindAlienHitByLazerBeam(beam))
-                    userBeams.Remove(beam);
+                    userShots.Remove(beam);
 
-            if (enemies.count == 0)
-                GameEndedEvent.FireMyEvent();
+            if (enemies.CanShoot(enemyShots.Count))
+                enemies.FireShot(enemyShots);
+
+            foreach (LazerBeam beam in enemyShots.ToArray())
+                beam.Update(enemyShots);
+               
+            if (enemies.count == 0) GameEndedEvent.FireMyEvent();
         }
 
         public void Draw(PaintEventArgs e)
@@ -85,7 +92,10 @@ namespace Space_Invaders
             {
                 enemies.Draw(g);
 
-                foreach (LazerBeam beam in userBeams)
+                foreach (LazerBeam beam in userShots)
+                    beam.Draw(g);
+
+                foreach (LazerBeam beam in enemyShots)
                     beam.Draw(g);
 
                 player.Draw(g);
