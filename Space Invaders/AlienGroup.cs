@@ -17,7 +17,7 @@ namespace Space_Invaders
                 return row_1.Count(s => s != null) + row_2.Count(s => s != null) + row_3.Count(s => s != null);
         }}
         private readonly int maxShots = 5;
-        private readonly int chanceOfShot = 10;
+        private readonly int chanceOfShot = 50;
 
         private Alien[] row_1 = new Alien[10];
         private Alien[] row_2 = new Alien[10];

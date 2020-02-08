@@ -33,11 +33,19 @@ namespace Space_Invaders
 
             GameEndedEvent.MyEvent += GameEnd;
 
+            UpdateHealthEvent.MyEvent += UpdateHealthMethod;
+
+
             gameTimer.Start();
             animationTimer.Start();
         }
 
-        private void GameEnd(Object sender, EventArgs e)
+        private void UpdateHealthMethod(UpdateHealthEventArgs e)
+        {
+            this.health_label.Text = "Health: " + e.value;
+        }
+
+        private void GameEnd(object sender, EventArgs e)
         {
             gameTimer.Stop();
             animationTimer.Stop();

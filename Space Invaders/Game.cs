@@ -34,7 +34,7 @@ namespace Space_Invaders
             this.form = form;
 
             UpdateScoreEvent.MyEvent += UpdateScoreMethod;
-
+        
             player = new Player();
             enemies = new AlienGroup();
 
@@ -74,6 +74,14 @@ namespace Space_Invaders
             foreach (LazerBeam beam in userShots.ToList())
                 if (enemies.FindAlienHitByLazerBeam(beam))
                     userShots.Remove(beam);
+
+            foreach (LazerBeam beam in enemyShots.ToList())
+                if (player.HitByLazerBeam(beam))
+                {
+                    enemyShots.Remove(beam);
+                    UpdateHealthEvent.FireMyEvent(player.health);
+                    if (player.health == 0) GameEndedEvent.FireMyEvent();
+                }
 
             if (enemies.CanShoot(enemyShots.Count))
                 enemies.FireShot(enemyShots);

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.score_label = new System.Windows.Forms.Label();
+            this.health_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // score_label
@@ -41,12 +42,23 @@
             this.score_label.TabIndex = 0;
             this.score_label.Text = "Score: 0";
             // 
+            // health_label
+            // 
+            this.health_label.AutoSize = true;
+            this.health_label.ForeColor = System.Drawing.Color.White;
+            this.health_label.Location = new System.Drawing.Point(12, 33);
+            this.health_label.Name = "health_label";
+            this.health_label.Size = new System.Drawing.Size(50, 13);
+            this.health_label.TabIndex = 1;
+            this.health_label.Text = "Health: 3";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.health_label);
             this.Controls.Add(this.score_label);
             this.DoubleBuffered = true;
             this.Name = "Form1";
@@ -62,6 +74,7 @@
         #endregion
 
         private System.Windows.Forms.Label score_label;
+        private System.Windows.Forms.Label health_label;
     }
 }
 

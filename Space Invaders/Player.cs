@@ -37,6 +37,20 @@ namespace Space_Invaders
             return new Bitmap(imgToResize, size);
         }
 
+        public bool HitByLazerBeam(LazerBeam beam)
+        {
+            if (beam.x - beam.width > this.x &&
+                   beam.x < this.x + this.width &&
+                   beam.y + beam.height >= this.y &&
+                   beam.y <= this.y + this.height)
+            {
+                this.health--;
+                return true;
+            }
+
+            return false;
+        }
+
         public void Draw(Graphics g)
         {
             g.DrawImage(image, x, y, width, height);
