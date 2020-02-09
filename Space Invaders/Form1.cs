@@ -35,7 +35,6 @@ namespace Space_Invaders
 
             UpdateHealthEvent.MyEvent += UpdateHealthMethod;
 
-
             gameTimer.Start();
             animationTimer.Start();
         }

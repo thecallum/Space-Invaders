@@ -48,6 +48,11 @@
   <ItemGroup>
     <Compile Include="Alien.cs" />
     <Compile Include="AlienGroup.cs" />
+    <Compile Include="Alien_Bug.cs" />
+    <Compile Include="Alien_FlyingSaucer.cs" />
+    <Compile Include="Alien_Satellite.cs" />
+    <Compile Include="Alien_SpaceShip.cs" />
+    <Compile Include="Alien_Star.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -58,6 +63,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="LazerBeam.cs" />
     <Compile Include="GameEndedEvent.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="Movable.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />

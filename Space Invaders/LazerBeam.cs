@@ -30,7 +30,7 @@ namespace Space_Invaders
     public abstract class LazerBeam
     {
         public Rectangle position { get; protected set; }
-        public static int speed { get; private set; } = 12;
+        public static int speed { get; private set; } = 6;
         public readonly Direction direction;
         public readonly Brush color;
 

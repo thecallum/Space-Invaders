@@ -7,20 +7,30 @@ using System.Drawing;
 
 namespace Space_Invaders
 {
-    class Alien : Movable
+    public abstract class Alien : Movable
     {
         public readonly int column;
         public readonly int points;
 
-        private int imageState = 0;
+        private int imagePosition = 0;
+        private bool imageDirection = true;
 
-        public Alien(Rectangle position, int column)
-            : base(position, 1, 1)
+        protected List<Image> imageList;
+
+        public enum Type
+        {
+            Bug,
+            FlyingSaucer,
+            Satellite,
+            SpaceShip,
+            Star,
+        }
+
+        public Alien(Rectangle position, int column, int health, int points)
+            : base(position, 1, health)
         {
             this.column = column;
-
-            points = 10;
-            ToggleImage();
+            this.points = points;
         }
 
         public void Update(bool directionChanged)
@@ -45,29 +55,16 @@ namespace Space_Invaders
 
         public void ToggleImage()
         {
-            imageState++;
+            image = imageList[imagePosition];
 
-            switch(imageState)
-            {
-                case 1:
-                    image = Properties.Resources.bug1;
-                    break;
-                case 2:
-                    image = Properties.Resources.bug2;
-                    break;
-                case 3:
-                    image = Properties.Resources.bug3;
-                    break;
-                case 4:
-                    image = Properties.Resources.bug4;
-                    break;
-                case 5:
-                    image = Properties.Resources.bug3;
-                    break;
-                default:
-                    image = Properties.Resources.bug2;
-                    imageState = 0;
-                    break;
+            if (imageDirection) {
+                imagePosition++;
+                if (imagePosition == imageList.Count - 1)
+                    imageDirection = false;
+            } else {
+                imagePosition--;
+                if (imagePosition == 0)
+                    imageDirection = true;
             }
         }
 

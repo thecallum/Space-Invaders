@@ -12,17 +12,42 @@ namespace Space_Invaders
         private readonly int columnCount = 10;
         public static int gap { get; private set; } = 20;
         public static Direction direction { get; private set; } = Direction.Right;
+
         public int count { get {
                 return row_1.Count(s => s != null) + row_2.Count(s => s != null) + row_3.Count(s => s != null);
         }}
-        private readonly int maxShots = 5;
-        private readonly int chanceOfShot = 50;
+
+        // private readonly 
+        private readonly int maxShots;
+        private readonly int chanceOfShot;
 
         private Alien[] row_1 = new Alien[10];
         private Alien[] row_2 = new Alien[10];
         private Alien[] row_3 = new Alien[10];
 
         private Random random = new Random();
+
+
+        public Alien ConstructAlien(Rectangle position, int column, Alien.Type alienType)
+        {
+            switch(alienType)
+            {
+                case Alien.Type.Bug:
+                    return new Alien_Bug(position, column);
+                case Alien.Type.FlyingSaucer:
+                    return new Alien_FlyingSaucer(position, column);
+                case Alien.Type.Satellite:
+                    return new Alien_Satellite(position, column);
+                case Alien.Type.SpaceShip:
+                    return new Alien_SpaceShip(position, column);
+                case Alien.Type.Star:
+                    return new Alien_Star(position, column);
+                default:
+                    return null;
+            }
+        }
+       
+
 
         public bool CanShoot(int currentShotCount)
         {
@@ -31,14 +56,19 @@ namespace Space_Invaders
             return false;
         }
 
-        public AlienGroup()
+        public AlienGroup(Level level)
         {
-            FillAlienRow(row_1, 0);
-            FillAlienRow(row_2, 1);
-            FillAlienRow(row_3, 2);
+            maxShots = level.maxShots;
+            chanceOfShot = level.chanceOfShot;
+
+
+
+            FillAlienRow(row_1, 0, level.alienType);
+            FillAlienRow(row_2, 1, level.alienType);
+            FillAlienRow(row_3, 2, level.alienType);
         }
 
-        private void FillAlienRow(Alien[] row, int rowNum)
+        private void FillAlienRow(Alien[] row, int rowNum, Alien.Type alienType)
         {
             for (int i = 0; i < columnCount; i++)
             {
@@ -49,7 +79,7 @@ namespace Space_Invaders
                     30
                 );
 
-                row[i] = new Alien(position, i);
+                row[i] = ConstructAlien(position, i, alienType);
             }
         }
 
