@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Space_Invaders
 {
-    public static class GameEndedEvent
+    public static class ResetFormEvent
     {
         public static event EventHandler MyEvent;
 

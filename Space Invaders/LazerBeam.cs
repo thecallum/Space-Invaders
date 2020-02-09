@@ -7,26 +7,6 @@ using System.Drawing;
 
 namespace Space_Invaders
 {
-    public class UserLazerBeam : LazerBeam
-    {
-        public UserLazerBeam(Rectangle userPosition)
-            : base(userPosition, Direction.up, Brushes.Red)
-        {
-
-        }
-    }
-
-
-
-    public class EnemyLazerBeam : LazerBeam
-    {
-        public EnemyLazerBeam(Rectangle userPosition)
-            :  base(userPosition, Direction.down, Brushes.Yellow)
-        {
-
-        }
-    }
-    
     public abstract class LazerBeam
     {
         public Rectangle position { get; protected set; }

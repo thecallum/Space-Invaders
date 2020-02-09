@@ -12,6 +12,9 @@ namespace Space_Invaders
 {
     class Player : Movable
     {
+        public readonly static int width = 40;
+        public readonly static int height = 40;
+
         public Player(Rectangle position)
             : base(position, 8, 3)
         {

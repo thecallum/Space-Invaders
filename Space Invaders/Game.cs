@@ -32,9 +32,8 @@ namespace Space_Invaders
         private int beforeLevelFrameCount = 100;
         private bool beforeLevel = true;
 
-        private int round = 1;
-
-        // private bool levelStarted = true;
+        private int round = 0;
+        private bool gameEnded = false;
         
         public Game(int windowWidth, int windowHeight, Form1 form)
         {
@@ -43,33 +42,43 @@ namespace Space_Invaders
 
             this.form = form;
 
-            levels = new Queue<Level>();
             SetupLevels();
+            SetupPlayer();
+
+            // Sets up enemies
+            ToggleNextLevel();
+            InitializeFormLabels();
 
             UpdateScoreEvent.MyEvent += UpdateScoreMethod;
-
-            int playerWidth = 80;
-            int playerHeight = 80;
-
-            Rectangle playerPosition = new Rectangle(
-                (Game.windowWidth + playerWidth) / 2, 
-                Game.windowHeight - playerHeight - 10,
-                playerWidth,
-                playerHeight
-            );
-        
-            player = new Player(playerPosition);
-
-            enemies = new AlienGroup(levels.Dequeue());
         }
-        
+
+        private void InitializeFormLabels()
+        {
+            form.UpdateScore(0);
+            form.UpdateHealth(player.health);
+        }
+
+        private void SetupPlayer()
+        {
+            Rectangle playerPosition = new Rectangle(
+                (Game.windowWidth + Player.width) / 2,
+                Game.windowHeight - Player.height - 10,
+                Player.width,
+                Player.height
+            );
+
+            player = new Player(playerPosition);
+        }
+
         private void SetupLevels()
         {
+            levels = new Queue<Level>();
+
             levels.Enqueue(new Level(Alien.Type.Bug, 5, 50));
-            levels.Enqueue(new Level(Alien.Type.FlyingSaucer, 5, 50));
-            levels.Enqueue(new Level(Alien.Type.Satellite, 5, 50));
-            levels.Enqueue(new Level(Alien.Type.SpaceShip, 5, 50));
-            levels.Enqueue(new Level(Alien.Type.Star, 5, 50));
+            levels.Enqueue(new Level(Alien.Type.FlyingSaucer, 10, 40));
+            levels.Enqueue(new Level(Alien.Type.Satellite, 15, 30));
+            levels.Enqueue(new Level(Alien.Type.SpaceShip, 20, 20));
+            levels.Enqueue(new Level(Alien.Type.Star, 25, 20));
         }
 
         public void MovePlayer(Direction direction)
@@ -86,14 +95,13 @@ namespace Space_Invaders
         public void FireShot()
         {
             if (updatesBeforeNextShot > 0) return;
-
             updatesBeforeNextShot = 10;
             userShots.Add(new UserLazerBeam(player.position));
         }
     
         public void Update()
         {
-            if (beforeLevel) return;
+            if (beforeLevel || gameEnded) return;
 
             if (updatesBeforeNextShot > 0) updatesBeforeNextShot--;
 
@@ -101,6 +109,11 @@ namespace Space_Invaders
                 beam.Update(userShots);
 
             enemies.Update();
+
+            if (enemies.AliensAtBottom()) {
+                ToggleGameEnd();
+                return;
+            }
 
             foreach (LazerBeam beam in userShots.ToList())
                 if (enemies.FindAlienHitByLazerBeam(beam))
@@ -110,8 +123,8 @@ namespace Space_Invaders
                 if (player.HitByLazerBeam(beam))
                 {
                     enemyShots.Remove(beam);
-                    UpdateHealthEvent.FireMyEvent(player.health);
-                    if (player.health == 0) GameEndedEvent.FireMyEvent();
+                    form.UpdateHealth(player.health);
+                    if (player.health == 0) ToggleGameEnd();
                 }
 
             if (enemies.CanShoot(enemyShots.Count))
@@ -123,14 +136,19 @@ namespace Space_Invaders
             if (enemies.count == 0) ToggleNextLevel();
         }
 
+        private void ToggleGameEnd()
+        {
+            Console.WriteLine("Game Ended");
+            gameEnded = true;
+            ResetFormEvent.FireMyEvent();
+        }
+
         private void ToggleNextLevel()
         {
             if (levels.Count() == 0) {
-                GameEndedEvent.FireMyEvent();
+                ToggleGameEnd();
                 return;
             }
-
-
 
             round++;
             beforeLevel = true;
@@ -143,12 +161,16 @@ namespace Space_Invaders
 
         public void Draw(PaintEventArgs e)
         {
-            Bitmap bitmap = new Bitmap(800, 600);
+            int width = 800;
+            int height = 600;
+
+            Bitmap bitmap = new Bitmap(width, height);
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-
-                if (beforeLevel) {
+                if (gameEnded) {
+                    DisplayGameEndedMessage(g);
+                } else if (beforeLevel) {
                     DrawBeforeLevel(g);
                 } else {
                     foreach (LazerBeam beam in userShots)
@@ -165,6 +187,27 @@ namespace Space_Invaders
             e.Graphics.DrawImageUnscaled(bitmap, 0, 0);
         }
 
+        private void DisplayMessage(Graphics g, string message)
+        {
+            Font messageFont = new Font("Arial", 42);
+            Brush messageColor = Brushes.White;
+            StringFormat drawFormat = new StringFormat();
+            drawFormat.Alignment = StringAlignment.Center;
+
+            g.DrawString(message, messageFont, messageColor, Game.windowWidth / 2, Game.windowHeight / 2 - 200, drawFormat);
+        }
+
+        private void DisplayGameEndedMessage(Graphics g)
+        {
+            string message = "";
+
+            message += "Game Ended\r\n";
+            message += "Score : " + score + "\r\n";
+            message += "Round : " + round + "\r\n";
+
+            DisplayMessage(g, message);
+        }
+
         private void DrawBeforeLevel(Graphics g)
         {
             beforeLevelFrameCount--;
@@ -176,14 +219,7 @@ namespace Space_Invaders
             }
 
             string message = "Round " + round;
-            Font messageFont = new Font("Arial", 42);
-
-            Brush messageColor = Brushes.White;
-
-            StringFormat drawFormat = new StringFormat();
-            drawFormat.Alignment = StringAlignment.Center;
-
-            g.DrawString(message, messageFont, messageColor, Game.windowWidth /2, Game.windowHeight /2 - 50, drawFormat);
+            DisplayMessage(g, message);
         }
 
         public void ToggleAnimation()

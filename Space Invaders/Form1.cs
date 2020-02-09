@@ -17,39 +17,65 @@ namespace Space_Invaders
         private Timer animationTimer;
         private List<Keys> keysPressed = new List<Keys>();
 
+        private bool gameStarted = false;
+
         public Form1()
         {
             InitializeComponent();
-            
+            ResetFormEvent.MyEvent += ResetFormMethod;
+        }
+
+        private void start_game_btn_Click_1(object sender, EventArgs e)
+        {
+            if (gameStarted) return;
+            StartNewGame();
+        }
+
+        private void StartNewGame()
+        {
+            gameStarted = true;
             game = new Game(ClientSize.Width, ClientSize.Height, this);
 
-            gameTimer = new Timer();
-            gameTimer.Interval = 10;
-            gameTimer.Tick += new EventHandler(gameTimer_tick);
+            start_game_btn.Visible = false;
 
-            animationTimer = new Timer();
-            animationTimer.Interval = 100;
-            animationTimer.Tick += new EventHandler(animationTimer_tick);
-
-            GameEndedEvent.MyEvent += GameEnd;
-
-            UpdateHealthEvent.MyEvent += UpdateHealthMethod;
+            SetupGameTimer();
+            SetupAnimationTimer();
 
             gameTimer.Start();
             animationTimer.Start();
         }
 
-        private void UpdateHealthMethod(UpdateHealthEventArgs e)
+        private void SetupGameTimer()
         {
-            this.health_label.Text = "Health: " + e.value;
+            gameTimer = new Timer();
+            gameTimer.Interval = 10;
+            gameTimer.Tick += new EventHandler(gameTimer_tick);
         }
 
-        private void GameEnd(object sender, EventArgs e)
+        private void SetupAnimationTimer()
         {
-            gameTimer.Stop();
+            animationTimer = new Timer();
+            animationTimer.Interval = 100;
+            animationTimer.Tick += new EventHandler(animationTimer_tick);
+        }
+
+        public void UpdateHealth(int value)
+        {
+            this.health_label.Text = "Health: " + value;
+        }
+
+        private void ResetFormMethod(object sender, EventArgs e)
+        {
+            if (!gameStarted)
+                return;
+
             animationTimer.Stop();
+            gameTimer.Stop();
+            start_game_btn.Visible = true;
+
             this.Refresh();
-            MessageBox.Show("Game Ended");
+
+            gameStarted = false;
         }
 
         private void animationTimer_tick(object sender, EventArgs e)
@@ -83,12 +109,12 @@ namespace Space_Invaders
                 game.FireShot();
 
             game.Update();
-
             this.Refresh();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            if (game == null) return;
             game.Draw(e);
         }
 
@@ -99,6 +125,7 @@ namespace Space_Invaders
             if (e.KeyCode == Keys.Space)
             {
                 spacePressed = true;
+                e.Handled = true;
                 return;
             }
 
@@ -119,5 +146,6 @@ namespace Space_Invaders
             if (keysPressed.Contains(e.KeyCode))
                 keysPressed.Remove(e.KeyCode);
         }
+
     }
 }

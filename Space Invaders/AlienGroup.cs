@@ -61,8 +61,6 @@ namespace Space_Invaders
             maxShots = level.maxShots;
             chanceOfShot = level.chanceOfShot;
 
-
-
             FillAlienRow(row_1, 0, level.alienType);
             FillAlienRow(row_2, 1, level.alienType);
             FillAlienRow(row_3, 2, level.alienType);
@@ -85,18 +83,15 @@ namespace Space_Invaders
 
         public void Update()
         {
-            // Check if alien furthest to right
             bool directionChanged = GroupAtBoundary();
-
             if (directionChanged) ToggleDirection();
 
             UpdateRow(row_1, directionChanged);
             UpdateRow(row_2, directionChanged);
             UpdateRow(row_3, directionChanged);
 
-            if (AliensAtBottom())
-                GameEndedEvent.FireMyEvent();
         }
+
 
         private void UpdateRow(Alien[] row, bool directionChanged)
         {
@@ -105,7 +100,7 @@ namespace Space_Invaders
                     row[i].Update(directionChanged);
         }
 
-        private bool AliensAtBottom()
+        public bool AliensAtBottom()
         {
             if (row_3.Count(s => s != null) > 0)
             {

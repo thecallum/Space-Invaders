@@ -17,8 +17,6 @@ namespace Space_Invaders
             this.alienType = alienType;
             this.maxShots = maxShots;
             this.chanceOfShot = chanceOfShot;
-
-            Console.WriteLine("Type: " + typeof(Alien_Bug));
         }
     }
 }
