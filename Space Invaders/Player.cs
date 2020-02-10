@@ -15,10 +15,26 @@ namespace Space_Invaders
         public readonly static int width = 40;
         public readonly static int height = 40;
 
-        public Player(Rectangle position)
+        private int updatesBeforeNextShot = 0;
+
+        public List<LazerBeam> shots = new List<LazerBeam>();
+
+        private Player(Rectangle position)
             : base(position, 8, 3)
         {
             image = Properties.Resources.player;
+        }
+
+        public static Player Setup()
+        {
+            Rectangle position = new Rectangle(
+               (Game.windowWidth + width) / 2,
+               Game.windowHeight - height - 10,
+               width,
+               height
+           );
+
+            return new Player(position);
         }
 
         public override void Move(Direction direction)
@@ -37,6 +53,27 @@ namespace Space_Invaders
                 newPosition.X = 10;
 
             this.position = newPosition;
+        }
+
+        public bool CanShoot()
+        {
+            return updatesBeforeNextShot == 0;
+        }
+
+        public void ResetUpdatesBeforeNextShot()
+        {
+            updatesBeforeNextShot = 10;
+        }
+
+        public void DecrementUpdatesBeforeNextShot()
+        {
+            updatesBeforeNextShot--;
+        }
+
+        public void Shoot()
+        {
+            LazerBeam shot = new UserLazerBeam(position);
+            shots.Add(shot);
         }
     }
 }

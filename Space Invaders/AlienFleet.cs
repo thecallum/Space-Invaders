@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace Space_Invaders
 {
-    class AlienGroup
+    class AlienFleet
     {
         private readonly int columnCount = 10;
         public static int gap { get; private set; } = 20;
@@ -17,37 +17,16 @@ namespace Space_Invaders
                 return row_1.Count(s => s != null) + row_2.Count(s => s != null) + row_3.Count(s => s != null);
         }}
 
-        // private readonly 
         private readonly int maxShots;
         private readonly int chanceOfShot;
+
+        public List<LazerBeam> shots = new List<LazerBeam>();
 
         private Alien[] row_1 = new Alien[10];
         private Alien[] row_2 = new Alien[10];
         private Alien[] row_3 = new Alien[10];
 
         private Random random = new Random();
-
-
-        public Alien ConstructAlien(Rectangle position, int column, Alien.Type alienType)
-        {
-            switch(alienType)
-            {
-                case Alien.Type.Bug:
-                    return new Alien_Bug(position, column);
-                case Alien.Type.FlyingSaucer:
-                    return new Alien_FlyingSaucer(position, column);
-                case Alien.Type.Satellite:
-                    return new Alien_Satellite(position, column);
-                case Alien.Type.SpaceShip:
-                    return new Alien_SpaceShip(position, column);
-                case Alien.Type.Star:
-                    return new Alien_Star(position, column);
-                default:
-                    return null;
-            }
-        }
-       
-
 
         public bool CanShoot(int currentShotCount)
         {
@@ -56,7 +35,7 @@ namespace Space_Invaders
             return false;
         }
 
-        public AlienGroup(Level level)
+        public AlienFleet(Level level)
         {
             maxShots = level.maxShots;
             chanceOfShot = level.chanceOfShot;
@@ -68,17 +47,8 @@ namespace Space_Invaders
 
         private void FillAlienRow(Alien[] row, int rowNum, Alien.Type alienType)
         {
-            for (int i = 0; i < columnCount; i++)
-            {
-                Rectangle position = new Rectangle(
-                    (i * (30 + gap)) + gap,
-                    (rowNum * (30 + gap)) + gap,
-                    30,
-                    30
-                );
-
-                row[i] = ConstructAlien(position, i, alienType);
-            }
+            for (int column = 0; column < columnCount; column++)
+                row[column] = Alien.Construct(alienType, column, rowNum, gap);
         }
 
         public void Update()
@@ -89,9 +59,7 @@ namespace Space_Invaders
             UpdateRow(row_1, directionChanged);
             UpdateRow(row_2, directionChanged);
             UpdateRow(row_3, directionChanged);
-
         }
-
 
         private void UpdateRow(Alien[] row, bool directionChanged)
         {
@@ -100,39 +68,27 @@ namespace Space_Invaders
                     row[i].Update(directionChanged);
         }
 
+        private bool RowEmpty(Alien[] row)
+        {
+            return row.Count(s => s != null) == 0;
+        }
+
         public bool AliensAtBottom()
         {
-            if (row_3.Count(s => s != null) > 0)
-            {
-                if (RowAtBottom(row_3))
-                    return true;
-                return false;
-            }
-
-            if (row_2.Count(s => s != null) > 0)
-            {
-                if (RowAtBottom(row_2))
-                    return true;
-                return false;
-            }
-
-            if (row_1.Count(s => s != null) > 0)
-            {
-                if (RowAtBottom(row_1))
-                    return true;
-                return false;
-            }
+            if (!RowEmpty(row_3)) return RowAtBottomBoundary(row_3);
+            if (!RowEmpty(row_2)) return RowAtBottomBoundary(row_2);
+            if (!RowEmpty(row_1)) return RowAtBottomBoundary(row_1);
 
             return false;
         }
 
 
-        private bool RowAtBottom(Alien[] row)
+        private bool RowAtBottomBoundary(Alien[] row)
         {
-            for (int i = 0; i < row.Count(); i++)
+            for (int column = 0; column < row.Count(); column++)
             {
-                if (row[i] == null) continue;
-                if (row[i].AtBottomBoundary()) return true;
+                if (row[column] == null) continue;
+                if (row[column].AtBottomBoundary()) return true;
             }
             return false;
         }
@@ -161,11 +117,10 @@ namespace Space_Invaders
 
         private bool RowAtLeftBoundary(Alien[] row)
         {
-            // find furthest left alien
-            for (int i = 0; i < row.Count(); i++)
+            for (int column = 0; column < row.Count(); column++)
             {
-                if (row[i] == null) continue;
-                if (row[i].AtLeftBoundary()) return true;
+                if (row[column] == null) continue;
+                if (row[column].AtLeftBoundary()) return true;
             }
 
             return false;
@@ -173,11 +128,10 @@ namespace Space_Invaders
 
         private bool RowAtRightBoundary(Alien[] row)
         {
-            // find furthest right alien
-            for (int i = row.Count() - 1; i > 0; i--)
+            for (int column = row.Count() - 1; column > 0; column--)
             {
-                if (row[i] == null) continue;
-                if (row[i].AtRightBoundary()) return true;
+                if (row[column] == null) continue;
+                if (row[column].AtRightBoundary()) return true;
             }
 
             return false;
@@ -194,14 +148,14 @@ namespace Space_Invaders
 
         private bool FindAlienHitByLazerBeamInRow(Alien[] row, LazerBeam beam)
         {
-            for (int i = 0; i < row.Count(); i++)
+            for (int column = 0; column < row.Count(); column++)
             {
-                if (row[i] != null && row[i].HitByLazerBeam(beam))
+                if (row[column] != null && row[column].HitByLazerBeam(beam))
                 {
-                    if (row[i].health == 0)
+                    if (row[column].health == 0)
                     {
-                        UpdateScoreEvent.FireMyEvent(row[i].points);
-                        row[i] = null;
+                        UpdateScoreEvent.FireMyEvent(row[column].points);
+                        row[column] = null;
                     }
                     return true;
                 }
@@ -246,11 +200,11 @@ namespace Space_Invaders
 
             for (int i = 0; i < 10; i++)
             {
-                if (row_3[i] != null && row_3[i].column == i)
+                if (row_3[i] != null)
                     firstRow.Add(row_3[i]);
-                else if (row_2[i] != null && row_2[i].column == i)
+                else if (row_2[i] != null)
                     firstRow.Add(row_2[i]);
-                else if (row_1[i] != null && row_1[i].column == i)
+                else if (row_1[i] != null)
                     firstRow.Add(row_1[i]);
                 else
                     firstRow.Add(null);

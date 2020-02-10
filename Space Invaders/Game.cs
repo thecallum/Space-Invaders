@@ -15,24 +15,18 @@ namespace Space_Invaders
         Form1 form;
         Player player;
 
-        Queue<Level> levels;
+        LevelManager levelManager;
 
         private int score = 0;
-        private List<LazerBeam> userShots = new List<LazerBeam>();
-        private List<LazerBeam> enemyShots = new List<LazerBeam>();
-
-        private AlienGroup enemies;
+        private AlienFleet enemies;
 
         public static int windowWidth { get; private set; }
         public static int windowHeight { get; private set; }
 
-        private int updatesBeforeNextShot = 0;
-
         private readonly int beforeLevelFrames = 100;
         private int beforeLevelFrameCount = 100;
-        private bool beforeLevel = true;
+        private bool displayBetweenLevelMessage = true;
 
-        private int round = 0;
         private bool gameEnded = false;
         
         public Game(int windowWidth, int windowHeight, Form1 form)
@@ -42,12 +36,12 @@ namespace Space_Invaders
 
             this.form = form;
 
-            SetupLevels();
-            SetupPlayer();
+            levelManager = new LevelManager();
 
-            // Sets up enemies
-            ToggleNextLevel();
+            player = Player.Setup();
+
             InitializeFormLabels();
+            ToggleNextLevel();
 
             UpdateScoreEvent.MyEvent += UpdateScoreMethod;
         }
@@ -56,29 +50,6 @@ namespace Space_Invaders
         {
             form.UpdateScore(0);
             form.UpdateHealth(player.health);
-        }
-
-        private void SetupPlayer()
-        {
-            Rectangle playerPosition = new Rectangle(
-                (Game.windowWidth + Player.width) / 2,
-                Game.windowHeight - Player.height - 10,
-                Player.width,
-                Player.height
-            );
-
-            player = new Player(playerPosition);
-        }
-
-        private void SetupLevels()
-        {
-            levels = new Queue<Level>();
-
-            levels.Enqueue(new Level(Alien.Type.Bug, 5, 50));
-            levels.Enqueue(new Level(Alien.Type.FlyingSaucer, 10, 40));
-            levels.Enqueue(new Level(Alien.Type.Satellite, 15, 30));
-            levels.Enqueue(new Level(Alien.Type.SpaceShip, 20, 20));
-            levels.Enqueue(new Level(Alien.Type.Star, 25, 20));
         }
 
         public void MovePlayer(Direction direction)
@@ -94,19 +65,19 @@ namespace Space_Invaders
 
         public void FireShot()
         {
-            if (updatesBeforeNextShot > 0) return;
-            updatesBeforeNextShot = 10;
-            userShots.Add(new UserLazerBeam(player.position));
+            if (player.CanShoot()) {
+                player.ResetUpdatesBeforeNextShot();
+                player.Shoot();
+            }
         }
     
         public void Update()
         {
-            if (beforeLevel || gameEnded) return;
+            if (displayBetweenLevelMessage || gameEnded) return;
+            if (!player.CanShoot()) player.DecrementUpdatesBeforeNextShot();
 
-            if (updatesBeforeNextShot > 0) updatesBeforeNextShot--;
-
-            foreach (LazerBeam beam in userShots.ToArray())
-                beam.Update(userShots);
+            foreach (LazerBeam shot in player.shots.ToArray())
+                shot.Update(player.shots);
 
             enemies.Update();
 
@@ -115,23 +86,23 @@ namespace Space_Invaders
                 return;
             }
 
-            foreach (LazerBeam beam in userShots.ToList())
+            foreach (LazerBeam beam in player.shots.ToList())
                 if (enemies.FindAlienHitByLazerBeam(beam))
-                    userShots.Remove(beam);
+                    player.shots.Remove(beam);
 
-            foreach (LazerBeam beam in enemyShots.ToList())
+            foreach (LazerBeam beam in enemies.shots.ToList())
                 if (player.HitByLazerBeam(beam))
                 {
-                    enemyShots.Remove(beam);
+                    enemies.shots.Remove(beam);
                     form.UpdateHealth(player.health);
                     if (player.health == 0) ToggleGameEnd();
                 }
 
-            if (enemies.CanShoot(enemyShots.Count))
-                enemies.FireShot(enemyShots);
+            if (enemies.CanShoot(enemies.shots.Count))
+                enemies.FireShot(enemies.shots);
 
-            foreach (LazerBeam beam in enemyShots.ToArray())
-                beam.Update(enemyShots);
+            foreach (LazerBeam beam in enemies.shots.ToArray())
+                beam.Update(enemies.shots);
                
             if (enemies.count == 0) ToggleNextLevel();
         }
@@ -145,18 +116,14 @@ namespace Space_Invaders
 
         private void ToggleNextLevel()
         {
-            if (levels.Count() == 0) {
+            if (!levelManager.MoreLevels()) {
                 ToggleGameEnd();
                 return;
-            }
+             }
 
-            round++;
-            beforeLevel = true;
-
-            Level nextLevel = levels.Dequeue();
-            enemies = new AlienGroup(nextLevel);
-            enemyShots.Clear();
-            userShots.Clear();
+            displayBetweenLevelMessage = true;
+            enemies = levelManager.NextLevel();
+            player.shots.Clear();
         }
 
         public void Draw(PaintEventArgs e)
@@ -168,23 +135,27 @@ namespace Space_Invaders
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                if (gameEnded) {
+                if (gameEnded)
                     DisplayGameEndedMessage(g);
-                } else if (beforeLevel) {
-                    DrawBeforeLevel(g);
-                } else {
-                    foreach (LazerBeam beam in userShots)
-                        beam.Draw(g);
-
-                    foreach (LazerBeam beam in enemyShots)
-                        beam.Draw(g);
-
-                    enemies.Draw(g);
-                    player.Draw(g);
-                }
+                else if (displayBetweenLevelMessage)
+                    DisplayBetweenLevelMessage(g);
+                else
+                    DrawGame(g);    
             }
 
             e.Graphics.DrawImageUnscaled(bitmap, 0, 0);
+        }
+
+        private void DrawGame(Graphics g)
+        {
+            foreach (LazerBeam shot in player.shots)
+                shot.Draw(g);
+
+            foreach (LazerBeam beam in enemies.shots)
+                beam.Draw(g);
+
+            enemies.Draw(g);
+            player.Draw(g);
         }
 
         private void DisplayMessage(Graphics g, string message)
@@ -203,22 +174,22 @@ namespace Space_Invaders
 
             message += "Game Ended\r\n";
             message += "Score : " + score + "\r\n";
-            message += "Round : " + round + "\r\n";
+            message += "Round : " + levelManager.round + "\r\n";
 
             DisplayMessage(g, message);
         }
 
-        private void DrawBeforeLevel(Graphics g)
+        private void DisplayBetweenLevelMessage(Graphics g)
         {
             beforeLevelFrameCount--;
 
             if (beforeLevelFrameCount == 0)
             {
-                beforeLevel = false;
+                displayBetweenLevelMessage = false;
                 beforeLevelFrameCount = beforeLevelFrames;
             }
 
-            string message = "Round " + round;
+            string message = "Round " + levelManager.round;
             DisplayMessage(g, message);
         }
 
